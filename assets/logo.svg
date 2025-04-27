@@ -1,0 +1,16 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Folder -->
+  <g transform="translate(40,50)">
+    <path d="M20 40 h80 l10 15 h120 a10 10 0 0 1 10 10 v80 a10 10 0 0 1 -10 10 h-200 a10 10 0 0 1 -10 -10 v-95 a10 10 0 0 1 10 -10z" fill="#7b2cbf" />
+    
+    <!-- Shifted Network Waves Left -->
+    <path d="M30 90 C60 60, 100 120, 130 90 S200 120, 230 90" fill="none" stroke="rgba(128,0,128,0.5)" stroke-width="5" stroke-linecap="round"/>
+    <path d="M30 110 C60 80, 100 140, 130 110 S200 140, 230 110" fill="none" stroke="rgba(128,0,128,0.3)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M30 130 C60 100, 100 160, 130 130 S200 160, 230 130" fill="none" stroke="rgba(128,0,128,0.2)" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Moved Text Left -->
+  <text x="46%" y="270" text-anchor="middle" fill="#7b2cbf" font-family="Arial, sans-serif" font-size="28" font-weight="bold">
+    StreamrDrive
+  </text>
+</svg>
