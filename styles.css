@@ -429,11 +429,6 @@ canvas {
   color: #c4b5fd; /* Even lighter on hover */
 }
 
-/* File/Folder Icons */
-.folder-icon i, .file-icon i {
-  /* Using SVG backgrounds now, but keep this for potential future use */
-}
-
 .file-name {
   vertical-align: middle;
   color: #e0e0e0; /* Light text for file names */
@@ -651,8 +646,17 @@ canvas {
 }
 
 .directory-icon {
-  /* Using SVG with adjusted fill color */
+  width: 32px;
+  height: 32px;
+  margin-right: 12px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23a78bfa" d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 20px;
 }
 
 .file-details {
@@ -1299,4 +1303,41 @@ canvas {
 
 .dashboard-container {
   height: 100%; 
+}
+
+.temp-folder-item {
+  background-color: rgba(123, 44, 191, 0.1);
+  border-left: 3px solid #9d4edd; 
+  border-radius: 4px; 
+}
+.temp-folder-item:hover {
+    background-color: rgba(157, 78, 221, 0.2); 
+}
+
+.temp-directory-icon {
+   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%239d4edd" d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>'); /* Lighter purple fill */
+}
+
+.temp-folder-notice {
+  padding: 10px 15px;
+  margin: 10px 8px;
+  background-color: rgba(0, 229, 255, 0.1); 
+  border: 1px solid #00e5ff; 
+  border-radius: 4px;
+  color: #8be9fd; 
+  font-size: 0.9em;
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+}
+
+.temp-folder-notice .fa-info-circle {
+  margin-right: 8px;
+  color: #00e5ff; 
+}
+
+.file-icon.directory-icon {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23a78bfa" d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>');
+}
+
+.file-icon.file-icon {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23aaaaaa" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm-2 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm-1-10V3.5L18.5 11H11z"/></svg>');
 }

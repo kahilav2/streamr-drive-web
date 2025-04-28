@@ -138,14 +138,15 @@ export default {
               <div>{{ progress.received }} of {{ progress.total }} chunks</div>
             </div>
           </div>
-          
-          <div v-else-if="files.length === 0" class="empty-dir">
+          <div v-if="isTempFolderView" class="temp-folder-notice">
+            <i class="fa fa-info-circle"></i> Files in this folder are automatically deleted after 24 hours.
+          </div>
+          <div v-if="files.length === 0" class="empty-dir">
             <div>This folder is empty</div>
           </div>
-          
           <div v-else class="file-list">
-            <div v-for="file in files" :key="file.name" class="file-item">
-              <div class="file-icon" :class="{ 'directory-icon': file.isDirectory, 'file-icon': !file.isDirectory }"></div>
+            <div v-for="file in sortedFiles" :key="file.name" class="file-item" :class="{ 'temp-folder-item': file.isDirectory && file.name === TEMP_FOLDER_NAME }">
+              <div :class="{ 'directory-icon': file.isDirectory, 'file-icon': !file.isDirectory, 'temp-directory-icon': file.isDirectory && file.name === TEMP_FOLDER_NAME }"></div>
               <div class="file-details" 
                    :style="{ cursor: file.isDirectory || isPreviewable(file.name) ? 'pointer' : 'default' }" 
                    @click="handleFileClick(file)">
@@ -307,6 +308,8 @@ export default {
   
   data() {
     return {
+      TEMP_FOLDER_NAME: window.TEMP_FOLDER_NAME,
+
       messageController: null,
       privateKey: '',
       streamUrl: '',
@@ -408,6 +411,27 @@ export default {
     }
     // Remove the event listener when component is destroyed
     document.removeEventListener('click', this.closeDropdowns);
+  },
+
+  computed: {
+    sortedFiles() {
+      const tempFolder = this.files.find(f => f.isDirectory && f.name === TEMP_FOLDER_NAME);
+      const otherFiles = this.files.filter(f => !(f.isDirectory && f.name === TEMP_FOLDER_NAME));
+
+      // Sort other files: directories first, then files, alphabetically
+      otherFiles.sort((a, b) => {
+        if (a.isDirectory !== b.isDirectory) {
+          return a.isDirectory ? -1 : 1; // Directories first
+        }
+        return a.name.localeCompare(b.name); // Then sort alphabetically
+      });
+
+      return tempFolder ? [tempFolder, ...otherFiles] : otherFiles;
+    },
+
+    isTempFolderView() {
+      return this.currentPath === "/" + TEMP_FOLDER_NAME 
+    }
   },
 
   watch: {
