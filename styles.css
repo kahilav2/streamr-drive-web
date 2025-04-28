@@ -1286,3 +1286,17 @@ canvas {
   font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands", "Font Awesome 5 Pro", "FontAwesome";
   font-weight: 900;
 }
+
+.app-container.drag-over {
+  outline: 2px dashed #007bff;
+  outline-offset: -10px; 
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.app-container {
+  min-height: 100vh; 
+}
+
+.dashboard-container {
+  height: 100%; 
+}

@@ -9,7 +9,13 @@ import Image from 'https://esm.sh/@tiptap/extension-image'
 
 export default {
   template: `
-  <div class="app-container">
+  <div 
+    class="app-container" 
+    @dragover.prevent="handleDragOver" 
+    @dragleave.prevent="handleDragLeave" 
+    @drop.prevent="handleDrop"
+    :class="{ 'drag-over': isDraggingOver }"
+  >
     <div v-if="state === 'dashboard'" class="hamburger-menu" @click="isSideMenuOpen = !isSideMenuOpen"/>
     <transition name="slide">
       <div
@@ -378,6 +384,8 @@ export default {
       showTiptapEditor: false,
       tiptapEditor: null,
       
+      // Drag and drop state
+      isDraggingOver: false,
     }
   },
 
@@ -1142,14 +1150,63 @@ export default {
       this.currentPath = path;
       await this.listFiles();
     },
-    
+    handleDragOver(event) {
+      // Only activate drop zone effect in the dashboard state
+      if (this.state === 'dashboard') {
+        this.isDraggingOver = true;
+      }
+    },
+    handleDragLeave(event) {
+      // Check if the leave event is actually leaving the intended drop zone
+      // This helps prevent flickering when dragging over child elements
+      if (!event.currentTarget.contains(event.relatedTarget)) {
+         this.isDraggingOver = false;
+      }
+    },
+    handleDrop(event) {
+      this.isDraggingOver = false;
+      
+      // Only allow drops in the dashboard state
+      if (this.state !== 'dashboard') {
+        return;
+      }
+
+      const files = event.dataTransfer.files;
+      if (!files || files.length === 0) {
+        return;
+      }
+
+      // Prevent opening the file in the browser
+      event.preventDefault(); 
+
+      console.log(`Dropped ${files.length} files.`);
+
+      // Process each dropped file
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        console.log(`Processing dropped file: ${file.name}`);
+        // Call the refactored upload logic
+        this.processAndUploadFile(file); 
+      }
+    },
     async uploadFile(event) {
       const file = event.target.files[0];
       if (!file) return;
       
-      this.isLoading = true;
+      this.processAndUploadFile(file);
+      
+      // Clear the file input
+      event.target.value = '';
+    },
+
+    async processAndUploadFile(file) {
+      this.isLoading = true; // Consider moving this inside the upload logic if handling multiple files
       try {
         const base64String = await this.fileToBase64(file);
+        
+        // Use a separate messageId for tracking this specific upload if needed
+        // For simplicity, we'll rely on the general isLoading for now.
+        // If you need per-file progress, you'd generate a unique ID here.
         
         await this.messageController.upload({
           type: "text",
@@ -1157,17 +1214,18 @@ export default {
             action: "upload",
             path: this.currentPath,
             fileName: file.name,
-            data: base64String.split(',')[1]
+            data: base64String.split(',')[1] 
           })
         });
-        // Don't reset isLoading here - it will be reset when upload is complete
+        // Don't reset isLoading here - it will be reset when upload is complete or fails
+        this.showToast(`Uploading ${file.name}...`, 'success'); 
       } catch (error) {
-        console.error('Error uploading file:', error);
-        this.errorMessages = [error.toString()];
-        this.isLoading = false;
-      } finally {
-        // Clear the file input
-        event.target.value = '';
+        console.error('Error uploading file:', file.name, error);
+        this.errorMessages.push(`Error uploading ${file.name}: ${error.toString()}`);
+        this.showToast(`Error uploading ${file.name}`, 'error');
+        // Only reset isLoading if all uploads failed or if handling one file at a time
+        // For multiple files, you might need more sophisticated state management.
+        this.isLoading = false; 
       }
     },
     
