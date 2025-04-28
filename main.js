@@ -14,6 +14,7 @@ export default {
     @dragover.prevent="handleDragOver" 
     @dragleave.prevent="handleDragLeave" 
     @drop.prevent="handleDrop"
+    @paste.prevent="handlePaste"
     :class="{ 'drag-over': isDraggingOver }"
   >
     <div v-if="state === 'dashboard'" class="hamburger-menu" @click="isSideMenuOpen = !isSideMenuOpen"/>
@@ -551,6 +552,82 @@ export default {
       await this.messageController.init();
       this.messageController.on("message", this.messageHandler);
       this.messageController.on("publish", this.handleMessagePublish);
+    },
+
+    generateTimestampedImageName(mimeType) {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.toLocaleString('en-US', { month: 'short' }); // e.g., 'Apr'
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+
+      // Determine file extension from MIME type
+      let extension = 'png'; // Default extension
+      if (mimeType === 'image/jpeg') {
+        extension = 'jpg';
+      } else if (mimeType === 'image/gif') {
+        extension = 'gif';
+      } else if (mimeType === 'image/webp') {
+        extension = 'webp';
+      } else if (mimeType === 'image/bmp') {
+        extension = 'bmp';
+      } else if (mimeType.startsWith('image/')) {
+         // Fallback for other image types like svg+xml, tiff etc.
+         extension = mimeType.split('/')[1].split('+')[0]; 
+      }
+
+      return `Image-${year}-${month}-${day}-${hours}${minutes}.${extension}`;
+    },
+    async handlePaste(event) {
+      if (this.state !== 'dashboard') {
+        console.log("Paste ignored: Not in dashboard state.");
+        return; // Only handle paste in dashboard view
+      }
+
+      const items = event.clipboardData.items;
+      if (!items) {
+        console.log("Paste ignored: No clipboard items found.");
+        return;
+      }
+
+      let fileToUpload = null;
+
+      console.log(`Found ${items.length} clipboard items.`);
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        console.log(`Item ${i}: kind=${item.kind}, type=${item.type}`);
+
+        // Check if it's a file (includes images pasted from clipboard)
+        if (item.kind === 'file') {
+          const file = item.getAsFile();
+          if (file) {
+            // If it's an image file from the clipboard (often named generically like 'image.png')
+            // or any file pasted from the filesystem.
+            if (item.type.startsWith('image/')) {
+              // Generate a timestamped name specifically for pasted image data
+              const newName = this.generateTimestampedImageName(file.type);
+              // Create a new File object with the generated name to ensure consistency
+              fileToUpload = new File([file], newName, { type: file.type });
+              console.log(`Identified pasted image. Generated name: ${newName}`);
+            } else {
+              // It's a non-image file pasted from the filesystem
+              fileToUpload = file;
+              console.log(`Identified pasted file: ${file.name}`);
+            }
+            break; // Process the first valid file/image found
+          }
+        }
+      }
+
+      if (fileToUpload) {
+        await this.processAndUploadFile(fileToUpload);
+      } else {
+        console.log("Paste ignored: No suitable file or image content found in clipboard.");
+        // Optionally show a toast message if nothing usable was pasted
+        // this.showToast("Clipboard does not contain a file or image to upload.", 'info');
+      }
     },
 
     async handleMessagePublish(msg) {
