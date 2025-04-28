@@ -22,7 +22,7 @@ export default {
       <div
         v-if="isSideMenuOpen" class="side-menu">
         <div class="container">
-          <h1 class="title mb-3">Streamr Drive (25-Apr26.0)</h1>
+          <h1 class="title mb-3">Streamr Drive (25-Apr28.0)</h1>
           <div class="mb-2"><b>Stream Address:</b> {{ streamUrl }}</div>
           <button class="mb-2" @click="changeAccount">Change Account</button>
           <div class="mb-2">Scan this QR code with another device to connect to this account</div>

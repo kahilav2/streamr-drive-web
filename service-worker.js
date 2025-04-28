@@ -1,5 +1,5 @@
-// VERSION: 25apr26.0
-const CACHE_NAME = 'streamr-drive-web-pwa-cache-25apr26.0';
+// VERSION: 25apr28.0
+const CACHE_NAME = 'streamr-drive-web-pwa-cache-25apr28.0';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
